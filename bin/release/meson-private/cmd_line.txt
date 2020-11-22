@@ -1,0 +1,7 @@
+[options]
+prefix = /home/cubbito/PAV
+libdir = lib
+buildtype = release
+
+[properties]
+
