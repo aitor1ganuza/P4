@@ -1,6 +1,6 @@
-Build started at 2020-11-22T21:03:34.180830
+Build started at 2020-11-22T21:23:08.030846
 Main binary: /usr/bin/python3
-Build Options: -Dprefix=/home/cubbito/PAV -Dlibdir=lib -Dbuildtype=release
+Build Options: -Dprefix=/home/cubbito/PAV -Dlibdir=lib -Dbuildtype=release -Dbackend=ninja
 Python system: Linux
 The Meson build system
 Version: 0.53.2
@@ -9,34 +9,8 @@ Build dir: /home/cubbito/PAV/P4/bin/release
 Build type: native build
 Project name: Práctica 4 de PAV - reconocimiento y verificación del locutor
 Project version: v2.0
-No CXXFLAGS in the environment, not changing global flags.
-No LDFLAGS in the environment, not changing global flags.
-No CPPFLAGS in the environment, not changing global flags.
-Sanity testing C++ compiler: c++
-Is cross compiler: False.
-Sanity check compiler command line: c++ /home/cubbito/PAV/P4/bin/release/meson-private/sanitycheckcpp.cc -o /home/cubbito/PAV/P4/bin/release/meson-private/sanitycheckcpp.exe -pipe -D_FILE_OFFSET_BITS=64
-Sanity check compile stdout:
-
------
-Sanity check compile stderr:
-
------
-Running test binary command: /home/cubbito/PAV/P4/bin/release/meson-private/sanitycheckcpp.exe
 C++ compiler for the build machine: c++ (gcc 9.3.0 "c++ (Ubuntu 9.3.0-10ubuntu2) 9.3.0")
 C++ linker for the build machine: c++ ld.bfd 2.34
-No CXXFLAGS in the environment, not changing global flags.
-No LDFLAGS in the environment, not changing global flags.
-No CPPFLAGS in the environment, not changing global flags.
-Sanity testing C++ compiler: c++
-Is cross compiler: False.
-Sanity check compiler command line: c++ /home/cubbito/PAV/P4/bin/release/meson-private/sanitycheckcpp.cc -o /home/cubbito/PAV/P4/bin/release/meson-private/sanitycheckcpp.exe -pipe -D_FILE_OFFSET_BITS=64
-Sanity check compile stdout:
-
------
-Sanity check compile stderr:
-
------
-Running test binary command: /home/cubbito/PAV/P4/bin/release/meson-private/sanitycheckcpp.exe
 C++ compiler for the host machine: c++ (gcc 9.3.0 "c++ (Ubuntu 9.3.0-10ubuntu2) 9.3.0")
 C++ linker for the host machine: c++ ld.bfd 2.34
 Build machine cpu family: x86_64
@@ -51,8 +25,8 @@ Build targets in project: 17
 
 Found ninja-1.10.0 at /usr/bin/ninja
 Running compile:
-Working directory:  /tmp/tmpgwuhpadt
-Command line:  c++ /tmp/tmpgwuhpadt/testfile.cpp -o /tmp/tmpgwuhpadt/output.obj -pipe -D_FILE_OFFSET_BITS=64 -c -std=c++11 
+Working directory:  /tmp/tmp315ds_9m
+Command line:  c++ /tmp/tmp315ds_9m/testfile.cpp -o /tmp/tmp315ds_9m/output.obj -pipe -D_FILE_OFFSET_BITS=64 -c -std=c++11 
 
 Code:
  int i = static_cast<int>(0);
@@ -62,8 +36,8 @@ Compiler stderr:
  
 Compiler accepts -std=c++11: YES
 Running compile:
-Working directory:  /home/cubbito/PAV/P4/bin/release/meson-private/tmpwzx3sxf0
-Command line:  c++ /home/cubbito/PAV/P4/bin/release/meson-private/tmpwzx3sxf0/testfile.cpp -o /home/cubbito/PAV/P4/bin/release/meson-private/tmpwzx3sxf0/output.obj -pipe -c -D_FILE_OFFSET_BITS=64 -O0 -fpermissive --print-search-dirs 
+Working directory:  /home/cubbito/PAV/P4/bin/release/meson-private/tmp1v615twu
+Command line:  c++ /home/cubbito/PAV/P4/bin/release/meson-private/tmp1v615twu/testfile.cpp -o /home/cubbito/PAV/P4/bin/release/meson-private/tmp1v615twu/output.obj -pipe -c -D_FILE_OFFSET_BITS=64 -O0 -fpermissive --print-search-dirs 
 
 Code:
  

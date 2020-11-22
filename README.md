@@ -32,18 +32,60 @@ ejercicios indicados.
 - Analice el script `wav2lp.sh` y explique la misión de los distintos comandos involucrados en el *pipeline*
   principal (`sox`, `$X2X`, `$FRAME`, `$WINDOW` y `$LPC`). Explique el significado de cada una de las 
   opciones empleadas y de sus valores.
+ 
+ ```bash
+ # Main command for feature extration
+  sox $inputfile -t raw -e signed -b 16 - | $X2X +sf | $FRAME -l 240 -p 80 | $WINDOW -l 240 -L 240 |
+	$LPC -l 240 -m $lpc_order > $base.lp
+  ```
+ 
+  `sox`: llamamos a este programa (ya utilizado en la práctica 1) para convertir la señal .WAV a formato raw para que x2x pueda leer el fichero (ya que x2x sólo puede leer formato raw)
+  `$X2X`: es el programa de SPTK que permite la conversión entre distintos formatos de datos. En nuestro caso utilizamos +sf para pasar de short a float y así tener reales en coma flotante de 32 bits. El resultado le pasamos a la salida estándar. 
+  `$FRAME`: divide la señal de entrada en tramas de 240 muestras (30 ms) con desplazamiento de ventana de
+  80 muestras (10 ms) teniendo en cuenta que utilizamos frecuencia de muestreo de 8 kHz. 
+  `$WINDOW`: multiplica cada trama por la ventana de Blackman (opción por defecto).
+  `$LPC`: calcula los lpc_order primeros coeficientes de predicción lineal, precedidos por el factor de
+  ganancia del predictor.
+
+  El resultado del pipeline se redirecciona a un fichero temporal, ubicado en el directorio /tmp, y
+  cuyo nombre es el mismo que el del script seguido del identificador del proceso (de este modo se
+  consigue un fichero temporal único para cada ejecución).
 
 - Explique el procedimiento seguido para obtener un fichero de formato *fmatrix* a partir de los ficheros de
   salida de SPTK (líneas 45 a 47 del script `wav2lp.sh`).
 
+```bash
+# Our array files need a header with the number of cols and rows:
+ncol=$((lpc_order+1)) # lpc p =>  (gain a1 a2 ... ap) 
+nrow=`$X2X +fa < $base.lp | wc -l | perl -ne 'print $_/'$ncol', "\n";'`
+```
+El fichero fmatrix se compone en número de filas y de columnas seguidos por los datos. 
+
+El numero de columnas (ncol) será igual al número de coeficientes, con lo cual será fácil de calcularlo ya que es el orden del predictor + 1 ya que en el primer elemento del vector se almacena la ganancia de predicción. 
+
+El número de filas será igual al número de tramas. Como depende de la longitud de la señal, el desplazamiento y longitud de la ventana y de la cadena de comandos que se ejecutan para obtener la parametrización; por todo ello, es mejor, simplemente, extraer esa información del fichero obtenido. Lo hacemos convirtiendo la señal parametrizada a texto, usando +fa, y contando el número de líneas, con el comando de UNIX wc -l.
+
   * ¿Por qué es conveniente usar este formato (u otro parecido)? Tenga en cuenta cuál es el formato de
     entrada y cuál es el de resultado.
+    
+    Porque de esta forma veremos a la salida el valor de los coeficientes en cada trama, siendo cada columna el valor de cada coeficiente y cada fila el número de trama, así queda una visualización en forma de matriz que es una manera bastante ordenada comparada con el fichero temporal generado.
 
 - Escriba el *pipeline* principal usado para calcular los coeficientes cepstrales de predicción lineal
   (LPCC) en su fichero <code>scripts/wav2lpcc.sh</code>:
 
+```bash
+# Main command for feature extration
+$LPCC -m $lpc_order -M $lpcc_order $inputfile > $base.lpcc
+```
+
 - Escriba el *pipeline* principal usado para calcular los coeficientes cepstrales en escala Mel (MFCC) en su
   fichero <code>scripts/wav2mfcc.sh</code>:
+
+```bash
+# Main command for feature extration
+sox $inputfile -t raw -e signed -b 16 - | $X2X +sf | $FRAME -l 240 -p 80 | $WINDOW -l 240 -L 240 |
+	$MFCC -s 8 -l 240 -m  $mfcc_order -n $filterbank_order > $base.mfcc
+```
 
 ### Extracción de características.
 
