@@ -1,8 +1,0 @@
-[options]
-prefix = /home/cubbito/PAV
-libdir = lib
-buildtype = release
-backend = ninja
-
-[properties]
-

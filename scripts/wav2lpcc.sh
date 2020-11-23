@@ -40,10 +40,10 @@ $LPCC -m $lpc_order -M $lpcc_order $inputfile > $base.lpcc
 
 # Our array files need a header with the number of cols and rows:
 ncol=$((lpcc_order)) # lpcc p =>  (c0 c1 c2 ... cp) 
-nrow=`$X2X +fa < $base.lp | wc -l | perl -ne 'print $_/'$ncol', "\n";'`
+nrow=`$X2X +fa < $base.lpcc | wc -l | perl -ne 'print $_/'$ncol', "\n";'`
 
 # Build fmatrix file by placing nrow and ncol in front, and the data after them
 echo $nrow $ncol | $X2X +aI > $outputfile
-cat $base.lp >> $outputfile
+cat $base.lpcc >> $outputfile
 
 exit
