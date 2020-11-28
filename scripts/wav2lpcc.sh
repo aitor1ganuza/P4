@@ -15,7 +15,7 @@ cleanup() {
 }
 
 if [[ $# != 4 ]]; then
-   echo "$0 lpc_order lpcc_order input.lp output.lpcc"
+   echo "$0 lpc_order lpcc_order input.wav output.lpcc"
    exit 1
 fi
 
@@ -23,20 +23,29 @@ lpc_order=$1
 lpcc_order=$2
 inputfile=$3
 outputfile=$4
-#No estoy seguro si es así o hay que añadirlo como argumento de entrada al programa
+
 
 
 UBUNTU_SPTK=1
 if [[ $UBUNTU_SPTK == 1 ]]; then
    # In case you install SPTK using debian package (apt-get)
+   X2X="sptk x2x"
+   FRAME="sptk frame"
+   WINDOW="sptk window"
+   LPC="sptk lpc"
    LPCC="sptk lpc2c"
 else
    # or install SPTK building it from its source
+   X2X="x2x"
+   FRAME="frame"
+   WINDOW="window"
+   LPC="lpc"
    LPCC="lpc2c"
 fi
 
 # Main command for feature extration
-$LPCC -m $lpc_order -M $lpcc_order $inputfile > $base.lpcc
+sox $inputfile -t raw -e signed -b 16 - | $X2X +sf | $FRAME -l 240 -p 80 | $WINDOW -l 240 -L 240 |
+	$LPC -l 240 -m $lpc_order | $LPCC -m $lpc_order -M $lpcc_order > $base.lpcc
 
 # Our array files need a header with the number of cols and rows:
 ncol=$((lpcc_order)) # lpcc p =>  (c0 c1 c2 ... cp) 

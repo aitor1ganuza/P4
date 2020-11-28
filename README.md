@@ -75,7 +75,8 @@ El número de filas será igual al número de tramas. Como depende de la longitu
 
 ```bash
 # Main command for feature extration
-$LPCC -m $lpc_order -M $lpcc_order $inputfile > $base.lpcc
+sox $inputfile -t raw -e signed -b 16 - | $X2X +sf | $FRAME -l 240 -p 80 | $WINDOW -l 240 -L 240 |
+	$LPC -l 240 -m $lpc_order | $LPCC -m $lpc_order -M $lpcc_order > $base.lpcc
 ```
 
 - Escriba el *pipeline* principal usado para calcular los coeficientes cepstrales en escala Mel (MFCC) en su
@@ -92,9 +93,53 @@ sox $inputfile -t raw -e signed -b 16 - | $X2X +sf | $FRAME -l 240 -p 80 | $WIND
 - Inserte una imagen mostrando la dependencia entre los coeficientes 2 y 3 de las tres parametrizaciones
   para todas las señales de un locutor.
   
+  <img src="Coef_2_3.png" width="640" align="center">
+
+
   + Indique **todas** las órdenes necesarias para obtener las gráficas a partir de las señales 
     parametrizadas.
+  
+    Primero hemos utilizado la ayuda aportada en el pdf de la práctica para obtener en un fichero de texto los coeficientes 2 y 3 de todos los ficheros de un locutor cualquiera (hemos utilizado el SES017):
+    
+    ```bash
+    fmatrix_show work/lp/BLOCK01/SES017/*.lp | egrep '^\[' | cut -f2,3 > lp_2_3.txt
+    fmatrix_show work/lpcc/BLOCK01/SES017/*.lpcc | egrep '^\[' | cut -f2,3 > lpcc_2_3.txt
+    fmatrix_show work/mfcc/BLOCK01/SES017/*.mfcc | egrep '^\[' | cut -f2,3 > mfcc_2_3.txt
+    ```
+
+    Como es lógico tenemos que crear 3 ficheros de texto, uno para cada parametrización.
+
+    Después hemos optado por hacer la gráfica con Matplotlib. El código para mostrar la gráfica anterior es el siguiente:
+
+    ```py
+    import matplotlib.pyplot as plt
+    import matplotlib.cbook as cbook
+    import numpy as np
+
+
+    lp = np.loadtxt('lp_2_3.txt')
+    lpcc = np.loadtxt('lpcc_2_3.txt')
+    mfcc = np.loadtxt('mfcc_2_3.txt')
+
+    fig, ax = plt.subplots()
+    ax.set(xlabel='Coeficientes 2', ylabel='Coeficientes 3')
+    line1, = ax.plot(lp[:, 0], lp[:, 1])
+    line2, = ax.plot(lpcc[:, 0], lpcc[:, 1])
+    line3, = ax.plot(mfcc[:, 0], mfcc[:, 1])
+    ax.legend((line1, line2, line3), ('lp', 'lpcc', 'mfcc'))
+    ax.grid()
+    plt.title("Coeficientes 2 y 3 de las parametrizaciones LP, LPCC y MFCC de todas las señales de un locutor")
+    plt.show()
+    ```
+
   + ¿Cuál de ellas le parece que contiene más información?
+
+  Contener más información en este contexto, es sinónimo de que los coeficientes de mayor orden contengan valores que no sean 0. En base a esto, la parametrización MFCC es la que contiene más información ya que a simple vista vemos que: 
+
+    - Coeficientes LP: los coeficientes de orden 3 de LP tienden ya prácticamente a 0 por lo que no nos proporcionan información.
+    - Coeficientes LPCC: los coeficientes de LPCC observamos que aunque sus coeficientes de orden 3 no tienden a 0, vemos que tienen un margen dinámico de valores más reducido que los de MFCC tanto en los de orden 2 como 3. 
+  
+  Con lo cual los coeficientes de MFCC son los que mayor información conservan.  
 
 - Usando el programa <code>pearson</code>, obtenga los coeficientes de correlación normalizada entre los
   parámetros 2 y 3 para un locutor, y rellene la tabla siguiente con los valores obtenidos.
