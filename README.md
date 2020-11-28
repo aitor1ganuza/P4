@@ -93,7 +93,7 @@ sox $inputfile -t raw -e signed -b 16 - | $X2X +sf | $FRAME -l 240 -p 80 | $WIND
 - Inserte una imagen mostrando la dependencia entre los coeficientes 2 y 3 de las tres parametrizaciones
   para todas las señales de un locutor.
   
-  <img src="Coef_2_3.png" width="640" align="center">
+  <img src="Coef_2_3.png" width="960" align="center">
 
 
   + Indique **todas** las órdenes necesarias para obtener las gráficas a partir de las señales 
