@@ -102,9 +102,9 @@ sox $inputfile -t raw -e signed -b 16 - | $X2X +sf | $FRAME -l 240 -p 80 | $WIND
     Primero hemos utilizado la ayuda aportada en el pdf de la práctica para obtener en un fichero de texto los coeficientes 2 y 3 de todos los ficheros de un locutor cualquiera (hemos utilizado el SES017):
     
     ```bash
-    fmatrix_show work/lp/BLOCK01/SES017/*.lp | egrep '^\[' | cut -f2,3 > lp_2_3.txt
-    fmatrix_show work/lpcc/BLOCK01/SES017/*.lpcc | egrep '^\[' | cut -f2,3 > lpcc_2_3.txt
-    fmatrix_show work/mfcc/BLOCK01/SES017/*.mfcc | egrep '^\[' | cut -f2,3 > mfcc_2_3.txt
+    fmatrix_show work/lp/BLOCK01/SES019/*.lp | egrep '^\[' | cut -f4,5 > lp_2_3.txt
+    fmatrix_show work/lpcc/BLOCK01/SES019/*.lpcc | egrep '^\[' | cut -f3,4 > lpcc_2_3.txt
+    fmatrix_show work/mfcc/BLOCK01/SES019/*.mfcc | egrep '^\[' | cut -f3,4 > mfcc_2_3.txt
     ```
 
     Como es lógico tenemos que crear 3 ficheros de texto, uno para cada parametrización.
@@ -121,36 +121,47 @@ sox $inputfile -t raw -e signed -b 16 - | $X2X +sf | $FRAME -l 240 -p 80 | $WIND
     lpcc = np.loadtxt('lpcc_2_3.txt')
     mfcc = np.loadtxt('mfcc_2_3.txt')
 
-    fig, ax = plt.subplots()
-    ax.set(xlabel='Coeficientes 2', ylabel='Coeficientes 3')
-    line1, = ax.plot(lp[:, 0], lp[:, 1])
-    line2, = ax.plot(lpcc[:, 0], lpcc[:, 1])
-    line3, = ax.plot(mfcc[:, 0], mfcc[:, 1])
-    ax.legend((line1, line2, line3), ('lp', 'lpcc', 'mfcc'))
-    ax.grid()
-    plt.title("Coeficientes 2 y 3 de las parametrizaciones LP, LPCC y MFCC de todas las señales de un locutor")
+    fig, (axlp,axlpcc,axmfcc) = plt.subplots(3)
+    fig.suptitle("Coeficientes 2 y 3 de las parametrizaciones LP, LPCC y MFCC de todas las señales de un locutor")
+    axlp.plot(lp[:, 0], lp[:, 1])
+    axlpcc.plot(lpcc[:, 0], lpcc[:, 1])
+    axmfcc.plot(mfcc[:, 0], mfcc[:, 1])
+    axlp.set_title('LP')
+    axlp.set(xlabel='Coeficientes 2', ylabel='Coeficientes 3')
+    axlpcc.set_title('LPCC')
+    axlpcc.set(xlabel='Coeficientes 2', ylabel='Coeficientes 3')
+    axmfcc.set_title('MFCC')
+    axmfcc.set(xlabel='Coeficientes 2', ylabel='Coeficientes 3')
+    axlp.grid()
+    axlpcc.grid()
+    axmfcc.grid()
     plt.show()
     ```
 
   + ¿Cuál de ellas le parece que contiene más información?
 
-  Contener más información en este contexto, es sinónimo de que los coeficientes de mayor orden contengan valores que no sean 0. En base a esto, la parametrización MFCC es la que contiene más información ya que a simple vista vemos que: 
-
-    - Coeficientes LP: los coeficientes de orden 3 de LP tienden ya prácticamente a 0 por lo que no nos proporcionan información.
-    - Coeficientes LPCC: los coeficientes de LPCC observamos que aunque sus coeficientes de orden 3 no tienden a 0, vemos que tienen un margen dinámico de valores más reducido que los de MFCC tanto en los de orden 2 como 3. 
+  Contener más información en este contexto, es sinónimo de ver cuánto de correlados están los coeficientes entre sí. Si ambos toman valores muy parecidos carecen de información ya que a partir de uno de los coeficientes podemos saber el otro, en cambio, si toman valores muy distintos, la información que aportará ambos será el doble. Gráficamente podemos observar que:
   
-  Con lo cual los coeficientes de MFCC son los que mayor información conservan.  
+  -LP: de por sí el rango dinámico de ambos coeficientes es muy pequeño (coeficientes 2 [-0.5,3], coeficientes 3 [-4,2]), por lo que habrán más posibilidades que los valores sean parecidos entre ambos coeficientes. Además hay una parte de la gráfica que parece más o menos lineal lo que eso significa que los coeficientes que están dentro de esa linealidad serán casi iguales.
+
+  -LPCC: en este caso, el rango dinámico es aproximadamente el mismo en ambos coeficientes (coeficientes 2        [-1.5,7.5], coeficientes 3 [-1.5,7.5]) cosa que podríamos pensar que estarán muy correlados, pero en este caso no es así ya que podemos interpretar la gráfica como la unión de 3 rectas que forman un "triángulo": una horizontal constante, otra vertical constante y una más o menos lineal con pendiente negativa. La recta horizontal y vertical sólo aportan correlación en el "vértice" que las une con lo cuál de manera general no aportan mucha correlación, y la lineal con pendiente negativa al no tener posibilidad de pasar por el origen tampoco aporta correlación salvo en el punto medio de la recta donde abcisas y ordenadas valen lo mismo. Con lo cuál teniendo en cuenta todo lo descrito, el LPCC aportará bastante información.
+
+  -MFCC: aquí vemos como el margen dinámico no es tan parecido (coeficientes 2 [-25,10], coeficientes 3 [-20,20] aproximadamente), por lo que parece que puede aportar información. La cosa está en que, al ser una recta más o menos constante con bastante dispersión, eso hace que haya una parte con más correlación y otra con menos y se vayan más o menos compensando. Con lo cuál aportará información pero no tanta como LPCC. 
 
 - Usando el programa <code>pearson</code>, obtenga los coeficientes de correlación normalizada entre los
   parámetros 2 y 3 para un locutor, y rellene la tabla siguiente con los valores obtenidos.
 
   |                        | LP   | LPCC | MFCC |
   |------------------------|:----:|:----:|:----:|
-  | &rho;<sub>x</sub>[2,3] |      |      |      |
+  | &rho;<sub>x</sub>[2,3] | -0.716101  |  0.037942    |  -0.349663    |
   
   + Compare los resultados de <code>pearson</code> con los obtenidos gráficamente.
   
+  Los resultados son lo que esperábamos. El LP tal y como hemos razonado anteriormente aporta poca información entre sus coeficientes 2 y 3 (&rho;≈1;), el LPCC es el que más información aporta sin duda (&rho;≈0) y el MFCC podríamos pensar que tal y como hemos dicho como hay compensación pues &rho;≈0.5 pero como el margen dinámico es diferente eso hace que aún aporte un poco más de información. 
+  
 - Según la teoría, ¿qué parámetros considera adecuados para el cálculo de los coeficientes LPCC y MFCC?
+
+Según la teoria, para reconocimiento del habla aproximadamente con 13 coeficentes LPCC o MFCC serian suficientes, y para el banco de filtros en el caso del MFCC, más o menos debemos seleccionar el doble de los coeficientes MFCC aunque en la práctica podemos seleccionar un poco menos del doble. 
 
 ### Entrenamiento y visualización de los GMM.
 
