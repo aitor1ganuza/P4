@@ -99,7 +99,7 @@ sox $inputfile -t raw -e signed -b 16 - | $X2X +sf | $FRAME -l 240 -p 80 | $WIND
   + Indique **todas** las órdenes necesarias para obtener las gráficas a partir de las señales 
     parametrizadas.
   
-    Primero hemos utilizado la ayuda aportada en el pdf de la práctica para obtener en un fichero de texto los coeficientes 2 y 3 de todos los ficheros de un locutor cualquiera (hemos utilizado el SES017):
+    Primero hemos utilizado la ayuda aportada en el pdf de la práctica para obtener en un fichero de texto los coeficientes 2 y 3 de todos los ficheros de un locutor cualquiera (hemos utilizado el SES019 del BLOCK01):
     
     ```bash
     fmatrix_show work/lp/BLOCK01/SES019/*.lp | egrep '^\[' | cut -f4,5 > lp_2_3.txt
