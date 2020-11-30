@@ -123,9 +123,9 @@ sox $inputfile -t raw -e signed -b 16 - | $X2X +sf | $FRAME -l 240 -p 80 | $WIND
 
     fig, (axlp,axlpcc,axmfcc) = plt.subplots(3)
     fig.suptitle("Coeficientes 2 y 3 de las parametrizaciones LP, LPCC y MFCC de todas las señales de un locutor")
-    axlp.plot(lp[:, 0], lp[:, 1])
-    axlpcc.plot(lpcc[:, 0], lpcc[:, 1])
-    axmfcc.plot(mfcc[:, 0], mfcc[:, 1])
+    axlp.plot(lp[:, 0], lp[:, 1],'.')
+    axlpcc.plot(lpcc[:, 0], lpcc[:, 1],'.')
+    axmfcc.plot(mfcc[:, 0], mfcc[:, 1],'.')
     axlp.set_title('LP')
     axlp.set(xlabel='Coeficientes 2', ylabel='Coeficientes 3')
     axlpcc.set_title('LPCC')
@@ -136,24 +136,28 @@ sox $inputfile -t raw -e signed -b 16 - | $X2X +sf | $FRAME -l 240 -p 80 | $WIND
     axlpcc.grid()
     axmfcc.grid()
     plt.show()
+
     ```
 
   + ¿Cuál de ellas le parece que contiene más información?
 
-  Contener más información en este contexto, es sinónimo de ver cuánto de correlados están los coeficientes entre sí. Si ambos toman valores muy parecidos carecen de información ya que a partir de uno de los coeficientes podemos saber el otro, en cambio, si toman valores muy distintos, la información que aportará ambos será el doble. Gráficamente podemos observar que:
+  Contener más información en este contexto, es sinónimo de ver cuánto de correlados están los coeficientes entre sí. Si ambos toman valores muy parecidos (forman una recta o línea estrecha) carecen de información ya que a partir de uno de los coeficientes podemos saber el otro, en cambio, si toman valores muy distintos, la información que aportará ambos será el doble. Gráficamente podemos observar que:
   
-  -LP: de por sí el rango dinámico de ambos coeficientes es muy pequeño (coeficientes 2 [-0.5,3], coeficientes 3 [-4,2]), por lo que habrán más posibilidades que los valores sean parecidos entre ambos coeficientes. Además hay una parte de la gráfica que parece más o menos lineal lo que eso significa que los coeficientes que están dentro de esa linealidad serán casi iguales.
+  -LP: los coeficientes se concentran en una línea bastante estrecha sin casi espacios en blanco que tiende a ir estrechándose cada vez más, por lo que aportan poca información.
 
-  -LPCC: en este caso, el rango dinámico es aproximadamente el mismo en ambos coeficientes (coeficientes 2        [-1.5,7.5], coeficientes 3 [-1.5,7.5]) cosa que podríamos pensar que estarán muy correlados, pero en este caso no es así ya que podemos interpretar la gráfica como la unión de 3 rectas que forman un "triángulo": una horizontal constante, otra vertical constante y una más o menos lineal con pendiente negativa. La recta horizontal y vertical sólo aportan correlación en el "vértice" que las une con lo cuál de manera general no aportan mucha correlación, y la lineal con pendiente negativa al no tener posibilidad de pasar por el origen tampoco aporta correlación salvo en el punto medio de la recta donde abcisas y ordenadas valen lo mismo. Con lo cuál teniendo en cuenta todo lo descrito, el LPCC aportará bastante información.
+  -LPCC: aquí ya observamos una gran dispersión en los coeficientes donde ya no hay ninguna línea estrecha. Vemos que se empiezan a concentrar un poco más pasado el origen de los coeficientes de orden 2 pero por contra también se dispersan cada vez más en el eje de los coeficientes de orden 3 (se ensancha la posible recta), por lo que la información que aporta será elevada ya que se mantiene la dispersión.
 
-  -MFCC: aquí vemos como el margen dinámico no es tan parecido (coeficientes 2 [-25,10], coeficientes 3 [-20,20] aproximadamente), por lo que parece que puede aportar información. La cosa está en que, al ser una recta más o menos constante con bastante dispersión, eso hace que haya una parte con más correlación y otra con menos y se vayan más o menos compensando. Con lo cuál aportará información pero no tanta como LPCC. 
+  -MFCC: aquí la información se concentra un poco más que en el caso anterior, aunque se vea que los márgenes dinámicos són más elevados eso no implica que pueda aportar más información ya que sigue concentrada en casi todo ese márgen dinámico. Por otro lado, tampoco lo podemos interpretar como si fuera una recta estrecha ya que este margen dinámico hace que sea ancha y también se ven más espacios en blanco que en el caso de LP.
+
+  Por lo tanto, en resumen, parece que la que más información puede obtener es la parametrización LPCC.
+   
 
 - Usando el programa <code>pearson</code>, obtenga los coeficientes de correlación normalizada entre los
   parámetros 2 y 3 para un locutor, y rellene la tabla siguiente con los valores obtenidos.
 
   |                        | LP   | LPCC | MFCC |
   |------------------------|:----:|:----:|:----:|
-  | &rho;<sub>x</sub>[2,3] | -0.716101  |  0.037942    |  -0.349663    |
+  | &rho;<sub>x</sub>[2,3] | -0.716101  |  -0.0375204    |  -0.349663    |
   
   + Compare los resultados de <code>pearson</code> con los obtenidos gráficamente.
   
