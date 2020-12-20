@@ -147,9 +147,10 @@ sox $inputfile -t raw -e signed -b 16 - | $X2X +sf | $FRAME -l 240 -p 80 | $WIND
 
   -LPCC: aquí ya observamos una gran dispersión en los coeficientes donde ya no hay ninguna línea estrecha. Vemos que se empiezan a concentrar un poco más pasado el origen de los coeficientes de orden 2 pero por contra también se dispersan cada vez más en el eje de los coeficientes de orden 3 (se ensancha la posible recta), por lo que la información que aporta será elevada ya que se mantiene la dispersión.
 
-  -MFCC: aquí la información se concentra un poco más que en el caso anterior, aunque se vea que los márgenes dinámicos són más elevados eso no implica que pueda aportar más información ya que sigue concentrada en casi todo ese márgen dinámico. Por otro lado, tampoco lo podemos interpretar como si fuera una recta estrecha ya que este margen dinámico hace que sea ancha y también se ven más espacios en blanco que en el caso de LP.
+  -MFCC: aquí la información se dispersa un poco más que en el caso anterior ya que además vemos que los márgenes dinámicos són más elevados
+  
 
-  Por lo tanto, en resumen, parece que la que más información puede obtener es la parametrización LPCC.
+  Por lo tanto, en resumen, parece que la que más información puede obtener es la parametrización MFCC. De todas formas, dados sólo 2 coeficientes nos podemos hacer un poco la idea de la información pero tampoco con mucha exactitud ya que no sabemos como es la correlación con los demás coeficientes.
    
 
 - Usando el programa <code>pearson</code>, obtenga los coeficientes de correlación normalizada entre los
@@ -161,7 +162,7 @@ sox $inputfile -t raw -e signed -b 16 - | $X2X +sf | $FRAME -l 240 -p 80 | $WIND
   
   + Compare los resultados de <code>pearson</code> con los obtenidos gráficamente.
   
-  Los resultados son lo que esperábamos. El LP tal y como hemos razonado anteriormente aporta poca información entre sus coeficientes 2 y 3 (&rho;≈1;), el LPCC es el que más información aporta sin duda (&rho;≈0) y el MFCC podríamos pensar que tal y como hemos dicho como hay compensación pues &rho;≈0.5 pero como el margen dinámico es diferente eso hace que aún aporte un poco más de información. 
+  Los resultados no son lo que esperábamos. El LP tal y como hemos razonado anteriormente aporta poca información entre sus coeficientes 2 y 3 (&rho;≈1;), el LPCC es el que más información aporta sin duda (&rho;≈0) y el MFCC vemos que aporta más de información que el LP pero no se aproxima ni de lejos a lo que aporta LPCC en este caso. 
   
 - Según la teoría, ¿qué parámetros considera adecuados para el cálculo de los coeficientes LPCC y MFCC?
 
@@ -174,9 +175,17 @@ Complete el código necesario para entrenar modelos GMM.
 - Inserte una gráfica que muestre la función de densidad de probabilidad modelada por el GMM de un locutor
   para sus dos primeros coeficientes de MFCC.
   
+  Utilizamos la orden <code>plot_gmm_feat -x 2 -y 1 work/gmm/mfcc/SES000.gmm work/mfcc/BLOCK00/SES000/SA000S*</code> y modificando el título, se obtiene la siguiente gráfica.
+  
+  <img src="plot_gmm_mfcc1.PNG" width="400" align="center">
+  
 - Inserte una gráfica que permita comparar los modelos y poblaciones de dos locutores distintos (la gŕafica
   de la página 20 del enunciado puede servirle de referencia del resultado deseado). Analice la capacidad
   del modelado GMM para diferenciar las señales de uno y otro.
+  
+  <img src="subplots.PNG" width="960" align="center">
+  
+  Aunque para visualizar el gráfico hayamos utilizado solo 2 coeficientes, se ve a simple vista que cada mezcla de gaussianas se ajusta mucho mejor a la nube de características asociada a su locutor asociado. De esta manera se ve de manera muy intuitiva el funcionamiento de los GMM, y de hecho es fácil imaginarse cómo serían las proyecciones de las fronteras de decisión en las dimensiones que estamos graficando. Obviamente la capacidad del GMMM para diferenciar las señales de uno y otro es muy superior a lo que se puede ver en esta simplificación, ya que utiliza todos los coeficientes MFCC que le hayamos asignado. 
 
 ### Reconocimiento del locutor.
 
@@ -184,6 +193,16 @@ Complete el código necesario para realizar reconociminto del locutor y optimice
 
 - Inserte una tabla con la tasa de error obtenida en el reconocimiento de los locutores de la base de datos
   SPEECON usando su mejor sistema de reconocimiento para los parámetros LP, LPCC y MFCC.
+  
+  Para classerr, tenemos el siguiente resultado:
+  
+| | number of errors | error rate  |
+| -- | -- | -- |
+| LP | - | -|
+| LPCC | 9 | 1.15% |
+| MFCC | - | - |
+
+Para LP y MFCC no hemos optimizado los resultados, ya que hemos conseguido un muy buen resultado para LPCC.  
 
 ### Verificación del locutor.
 
@@ -193,6 +212,16 @@ Complete el código necesario para realizar verificación del locutor y optimice
   de verificación de SPEECON. La tabla debe incluir el umbral óptimo, el número de falsas alarmas y de
   pérdidas, y el score obtenido usando la parametrización que mejor resultado le hubiera dado en la tarea
   de reconocimiento.
+  
+  Para verificación:
+
+| | Threshold | Missed | False Alarm |  Cost Detection |
+| -- | -- | -- | -- | -- |
+| LP | - | - | - | - |
+| LPCC | - | - | - | - |
+| MFCC | -0.323 | 23 | 0 | 9.2 |
+
+En este caso, los mejores resultados se obtenían para el MFCC, por lo que no ha sido necesario optimizar los parámetros de los otros vectores de características.
  
 ### Test final
 
