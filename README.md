@@ -201,6 +201,7 @@ Complete el código necesario para realizar reconociminto del locutor y optimice
 | LPCC | 9 | 1.15% |
 | MFCC | - | - |
 
+Para LP y MFCC no hemos optimizado los resultados, ya que hemos conseguido un muy buen resultado para LPCC.  
 
 ### Verificación del locutor.
 
@@ -218,6 +219,8 @@ Complete el código necesario para realizar verificación del locutor y optimice
 | LP | - | - | - | - |
 | LPCC | - | - | - | - |
 | MFCC | -0.323 | 23 | 0 | 9.2 |
+
+En este caso, los mejores resultados se obtenían para el MFCC, por lo que no ha sido necesario optimizar los parámetros de los otros vectores de características.
  
 ### Test final
 
