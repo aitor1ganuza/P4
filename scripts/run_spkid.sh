@@ -7,6 +7,7 @@
 
 ## @file
 # \TODO
+# \DONE
 # Set the proper value to variables: lists, w, name_exp and db
 # - lists:    directory with the list of signal files
 # - w:        a working directory for temporary files
@@ -84,6 +85,7 @@ fi
 
 ## @file
 # \TODO
+# \DONE
 # Create your own features with the name compute_$FEAT(), where  $FEAT the name of the feature.
 # - Select (or change) different features, options, etc. Make you best choice and try several options.
 
@@ -102,7 +104,7 @@ compute_lpcc() {
     shift  
     for filename in $(cat $*); do
         mkdir -p `dirname $w/$FEAT/$filename.$FEAT`
-        EXEC="wav2lpcc 16 12 $db/$filename.wav $w/$FEAT/$filename.$FEAT"
+        EXEC="wav2lpcc 18 12 $db/$filename.wav $w/$FEAT/$filename.$FEAT"
         echo $EXEC && $EXEC || exit 1
     done
 }
@@ -112,7 +114,7 @@ compute_mfcc() {
     shift
     for filename in $(cat $*); do
         mkdir -p `dirname $w/$FEAT/$filename.$FEAT`
-        EXEC="wav2mfcc 13 20 $db/$filename.wav $w/$FEAT/$filename.$FEAT"
+        EXEC="wav2mfcc 12 40 $db/$filename.wav $w/$FEAT/$filename.$FEAT"
         echo $EXEC && $EXEC || exit 1
     done
 }
@@ -142,12 +144,23 @@ for cmd in $*; do
    if [[ $cmd == train ]]; then
        ## @file
 	   # \TODO
+       # \DONE
 	   # Select (or change) good parameters for gmm_train
        for dir in $db/BLOCK*/SES* ; do
            name=${dir/*\/}
            echo $name ----
-           gmm_train  -v 1 -T 0.001 -N 5 -m 2 -d $w/$FEAT -e $FEAT -g $w/gmm/$FEAT/$name.gmm $lists/class/$name.train || exit 1
-           echo
+           if [[ $FEAT == lp ]]; then
+                gmm_train -v 1 -T 0.0005 -N 1000 -m 70 -i 1 -n 200 -t 0.0001 -d $w/$FEAT -e $FEAT -g $w/gmm/$FEAT/$name.gmm $lists/class/$name.train || exit 1
+                echo
+            elif [[ $FEAT == lpcc ]]; then
+                gmm_train -v 1 -T 0.0005 -N 1000 -m 70 -i 1 -n 200 -t 0.0001 -d $w/$FEAT -e $FEAT -g $w/gmm/$FEAT/$name.gmm $lists/class/$name.train || exit 1
+                echo
+            elif [[ $FEAT == mfcc ]]; then
+                gmm_train  -v 1 -T 0.0001 -N 500 -m 99 -i 1 -n 100 -t 0.0001 -d $w/$FEAT -e $FEAT -g $w/gmm/$FEAT/$name.gmm $lists/class/$name.train || exit 1
+                echo
+            fi
+
+           
        done
    elif [[ $cmd == test ]]; then
        (gmm_classify -d $w/$FEAT -e $FEAT -D $w/gmm/$FEAT -E gmm $lists/gmm.list  $lists/class/all.test | tee $w/class_${FEAT}_${name_exp}.log) || exit 1
@@ -167,32 +180,40 @@ for cmd in $*; do
        ## @file
 	   # \TODO
 	   # Implement 'trainworld' in order to get a Universal Background Model for speaker verification
-	   #
+	   # \DONE
 	   # - The name of the world model will be used by gmm_verify in the 'verify' command below.
-       gmm_train  -v 1 -T 0.001 -N5 -m 2 -d $w/$FEAT -e $FEAT -g $w/gmm/$FEAT/$world.gmm $lists/verif/$world.train || exit 1
+        if [[ $FEAT == lp ]]; then
+            gmm_train -v 1 -T 0.0005 -N 1000 -m 70 -i 1 -n 200 -t 0.0001 -d $w/$FEAT -e $FEAT -g $w/gmm/$FEAT/$world.gmm $lists/verif/$world.train || exit 1
+        elif [[ $FEAT == lpcc ]]; then
+            gmm_train -v 1 -T 0.0005 -N 1000 -m 70 -i 1 -n 200 -t 0.0001 -d $w/$FEAT -e $FEAT -g $w/gmm/$FEAT/$world.gmm $lists/verif/$world.train || exit 1
+        elif [[ $FEAT == mfcc ]]; then
+            gmm_train  -v 1 -T 0.0001 -N 500 -m 99 -i 1 -n 100 -t 0.0001 -d $w/$FEAT -e $FEAT -g $w/gmm/$FEAT/$world.gmm $lists/verif/$world.train || exit 1
+        fi
+      
    elif [[ $cmd == verify ]]; then
        ## @file
 	   # \TODO 
 	   # Implement 'verify' in order to perform speaker verification
-	   #
+	   # \DONE
 	   # - The standard output of gmm_verify must be redirected to file $w/verif_${FEAT}_${name_exp}.log.
 	   #   For instance:
 	   #   * <code> gmm_verify ... > $w/verif_${FEAT}_${name_exp}.log </code>
 	   #   * <code> gmm_verify ... | tee $w/verif_${FEAT}_${name_exp}.log </code>
        (gmm_verify -d $w/$FEAT -e $FEAT -D $w/gmm/$FEAT -E gmm $lists/gmm.list -w $world $lists/verif/all.test $lists/verif/all.test.candidates |
         tee $w/verif_${FEAT}_${name_exp}.log) || exit 1
-   elif [[ $cmd == verif_err ]]; then
+   elif [[ $cmd == verifyerr ]]; then
        if [[ ! -s $w/verif_${FEAT}_${name_exp}.log ]] ; then
           echo "ERROR: $w/verif_${FEAT}_${name_exp}.log not created"
           exit 1
        fi
        # You can pass the threshold to spk_verif_score.pl or it computes the
        # best one for these particular results.
-       spk_verif_score.pl $w/verif_${FEAT}_${name_exp}.log | tee $w/verif_${FEAT}_${name_exp}.res
+       spk_verif_score $w/verif_${FEAT}_${name_exp}.log | tee $w/verif_${FEAT}_${name_exp}.res
 
    elif [[ $cmd == finalclass ]]; then
        ## @file
 	   # \TODO
+       # \DONE
 	   # Perform the final test on the speaker classification of the files in spk_ima/sr_test/spk_cls.
 	   # The list of users is the same as for the classification task. The list of files to be
 	   # recognized is lists/final/class.test
@@ -202,6 +223,7 @@ for cmd in $*; do
    elif [[ $cmd == finalverif ]]; then
        ## @file
 	   # \TODO
+       # \DONE
 	   # Perform the final test on the speaker verification of the files in spk_ima/sr_test/spk_ver.
 	   # The list of legitimate users is lists/final/verif.users, the list of files to be verified
 	   # is lists/final/verif.test, and the list of users claimed by the test files is
@@ -209,6 +231,10 @@ for cmd in $*; do
        compute_$FEAT $final lists/final/verif.test
        (gmm_verify -d $w/$FEAT -e $FEAT -D $w/gmm/$FEAT -E gmm $lists/gmm.list -w $world lists/final/verif.test lists/final/verif.test.candidates |
         tee $w/verif_test.log) || exit 1
+         
+        perl -ane 'print "$F[0]\t$F[1]\t";
+        if ($F[2] > -0.32) {print "1\n"}
+        else {print "0\n"}' work/verif_test.log | tee verif_test.log
    
    # If the command is not recognize, check if it is the name
    # of a feature and a compute_$FEAT function exists.
