@@ -147,9 +147,10 @@ sox $inputfile -t raw -e signed -b 16 - | $X2X +sf | $FRAME -l 240 -p 80 | $WIND
 
   -LPCC: aquí ya observamos una gran dispersión en los coeficientes donde ya no hay ninguna línea estrecha. Vemos que se empiezan a concentrar un poco más pasado el origen de los coeficientes de orden 2 pero por contra también se dispersan cada vez más en el eje de los coeficientes de orden 3 (se ensancha la posible recta), por lo que la información que aporta será elevada ya que se mantiene la dispersión.
 
-  -MFCC: aquí la información se concentra un poco más que en el caso anterior, aunque se vea que los márgenes dinámicos són más elevados eso no implica que pueda aportar más información ya que sigue concentrada en casi todo ese márgen dinámico. Por otro lado, tampoco lo podemos interpretar como si fuera una recta estrecha ya que este margen dinámico hace que sea ancha y también se ven más espacios en blanco que en el caso de LP.
+  -MFCC: aquí la información se dispersa un poco más que en el caso anterior ya que además vemos que los márgenes dinámicos són más elevados
+  
 
-  Por lo tanto, en resumen, parece que la que más información puede obtener es la parametrización LPCC.
+  Por lo tanto, en resumen, parece que la que más información puede obtener es la parametrización MFCC. De todas formas, dados sólo 2 coeficientes nos podemos hacer un poco la idea de la información pero tampoco con mucha exactitud ya que no sabemos como es la correlación con los demás coeficientes.
    
 
 - Usando el programa <code>pearson</code>, obtenga los coeficientes de correlación normalizada entre los
