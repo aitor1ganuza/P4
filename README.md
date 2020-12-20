@@ -174,15 +174,17 @@ Complete el código necesario para entrenar modelos GMM.
 - Inserte una gráfica que muestre la función de densidad de probabilidad modelada por el GMM de un locutor
   para sus dos primeros coeficientes de MFCC.
   
-  Utilizamos la orden <code>plot_gmm_feat -x 2 -y 1 work/gmm/mfcc/SES000.gmm work/mfcc/BLOCK00/SES000/SA000S*<\code> y modificando el título, se obtiene la siguiente gráfica.
+  Utilizamos la orden <code>plot_gmm_feat -x 2 -y 1 work/gmm/mfcc/SES000.gmm work/mfcc/BLOCK00/SES000/SA000S*</code> y modificando el título, se obtiene la siguiente gráfica.
   
-  <img src="plot_gmm_mfcc1.PNG" width="460" align="center">
+  <img src="plot_gmm_mfcc1.PNG" width="400" align="center">
   
 - Inserte una gráfica que permita comparar los modelos y poblaciones de dos locutores distintos (la gŕafica
   de la página 20 del enunciado puede servirle de referencia del resultado deseado). Analice la capacidad
   del modelado GMM para diferenciar las señales de uno y otro.
   
   <img src="subplots.PNG" width="960" align="center">
+  
+  Aunque para visualizar el gráfico hayamos utilizado solo 2 coeficientes, se ve a simple vista que cada mezcla de gaussianas se ajusta mucho mejor a la nube de características asociada a su locutor asociado. De esta manera se ve de manera muy intuitiva el funcionamiento de los GMM, y de hecho es fácil imaginarse cómo serían las proyecciones de las fronteras de decisión en las dimensiones que estamos graficando. Obviamente la capacidad del GMMM para diferenciar las señales de uno y otro es muy superior a lo que se puede ver en esta simplificación, ya que utiliza todos los coeficientes MFCC que le hayamos asignado. 
 
 ### Reconocimiento del locutor.
 
