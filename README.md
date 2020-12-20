@@ -162,7 +162,7 @@ sox $inputfile -t raw -e signed -b 16 - | $X2X +sf | $FRAME -l 240 -p 80 | $WIND
   
   + Compare los resultados de <code>pearson</code> con los obtenidos gráficamente.
   
-  Los resultados son lo que esperábamos. El LP tal y como hemos razonado anteriormente aporta poca información entre sus coeficientes 2 y 3 (&rho;≈1;), el LPCC es el que más información aporta sin duda (&rho;≈0) y el MFCC podríamos pensar que tal y como hemos dicho como hay compensación pues &rho;≈0.5 pero como el margen dinámico es diferente eso hace que aún aporte un poco más de información. 
+  Los resultados no son lo que esperábamos. El LP tal y como hemos razonado anteriormente aporta poca información entre sus coeficientes 2 y 3 (&rho;≈1;), el LPCC es el que más información aporta sin duda (&rho;≈0) y el MFCC vemos que aporta más de información que el LP pero no se aproxima ni de lejos a lo que aporta LPCC en este caso. 
   
 - Según la teoría, ¿qué parámetros considera adecuados para el cálculo de los coeficientes LPCC y MFCC?
 
